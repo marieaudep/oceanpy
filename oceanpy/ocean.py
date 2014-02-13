@@ -91,15 +91,15 @@ def munk_scale(lat0,A=4e7):
 
 def munk_scale_pop(dx):
     """Compute boundary current length scale after Munk 1950
-    from POP model zonal grid spacing `dx` (m)
+    from model zonal grid spacing `dx` (m)
     after Jochum et al. 2008, JGR 113, equation A16
     """
-    return 4*np.pi/np.sqrt(3) * 0.16**(1/3.) * dx
+    return 4*np.pi / np.sqrt(3) * 0.16**(1/3.) * dx
 
 
 def munk_scale_pop_highres(lat,dx,AB0=2.7e10):
     """Compute boundary current length scale after Munk 1950
-    from latitude `lat` (deg), POP model zonal grid spacing `dx` (m) and
+    from latitude `lat` (deg), model zonal grid spacing `dx` (m) and
     biharmonic viscosity at the equator `AB0` (m4 s-1), following
     Maltrud et al. 1998 (doi:10.1029/1998JC900013) and
     Smith et al. 2000 (doi:10.1175/1520-0485(2000)030<1532:NSOTNA>2.0.CO;2)
