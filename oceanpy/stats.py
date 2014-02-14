@@ -71,4 +71,10 @@ def smooth(data,width=None,window=None,npasses=2,ckwargs=dict(mode='same')):
         return outdata
 
 
+def griddata_nn_delaunay(x,y,z,xi,yi):
+    """Like matplotlib.mlab.griddata() but strictly using delaunay"""
+    tri = delaunay.Triangulation(x,y)
+    interp = tri.nn_interpolator(z)
+    return np.ma.masked_invalid(interp(xi,yi)) 
+
 
