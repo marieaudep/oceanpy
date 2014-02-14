@@ -3,15 +3,70 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-from . import utils
-from . import register_package_cmaps
-register_package_cmaps()
+import prettycpt ; prettycpt.register_package_cmaps()
 
 
 def _symmetric(a):
     return np.unique(np.concatenate((-np.asarray(a),a)))
 def _symmetric0(a):
     return np.unique(np.concatenate((-np.asarray(a),[0],a)))
+
+
+def num2str(x,mindecs=0):
+    """Convert number `x` to string with same number of internal decimal places or `mindecs` trailing 0s
+
+    Example
+    -------
+
+        >>> num2str([1, 1., 1.0, 1.2, 1.234])
+        ['1', '1', '1', '1.2', '1.234']
+
+    """
+    def _stringify(x,mindecs):
+        ssplt = str(x).split('.')
+        if len(ssplt) == 1 or ssplt[-1] == '0':
+            ndigits = mindecs
+        else:
+            ndigits = np.max((mindecs,len(ssplt[-1])))
+        fmtstr = '{:.' + str(ndigits) + 'f}'        
+        return fmtstr.format(x)
+    return np.vectorize(_stringify)(x,mindecs)[()]
+
+
+def num2fmtdict(nlst,mindecs=1):
+    """Make format-dictionary from a list of numbers
+    
+    Paramters
+    ---------
+    nlst : lst
+        list of numbers with different number of internal decimal places
+    mindecs : int, optional
+        can be used to set a minimum number of decimal places
+    
+    Returns
+    -------
+    dict
+        dictionary with python format-strings
+        to be used with pyplot.clabel(fmt=...)
+        
+    Example
+    -------
+
+        >>> num2fmtdict([1.,1.2,1.234])
+        {1.0: '1.0', 1.2: '1.2', 1.234: '1.234'}
+        
+    """
+    fmtdct = {}
+    for x in nlst:
+        ssplt = str(x).split('.')
+        if len(ssplt) == 1 or ssplt[-1] == '0':
+            ndigits = mindecs
+        else:
+            ndigits = np.max((mindecs,len(ssplt[-1])))
+        fmtstr = '{:.' + str(ndigits) + 'f}'
+        fmtdct[x] = fmtstr.format(x)
+    return fmtdct
+
 
 
 class VarMeta:
@@ -325,7 +380,7 @@ class VarMeta:
         for key in ['levels','ticks','levels_overlay']:
             try:
                 setattr(self,key,np.asarray(getattr(self,key)))
-                setattr(self,(key+'_str'),utils.num2str(getattr(self,key),mindecs=0))
+                setattr(self,(key+'_str'),num2str(getattr(self,key),mindecs=0))
             except AttributeError:
                 pass
 
@@ -367,5 +422,5 @@ class VarMeta:
             self.update_ticks()
 
     def generate_clabfmt(self):
-        self.clabfmt = utils.num2fmtdict(self.levels)
+        self.clabfmt = num2fmtdict(self.levels)
 
