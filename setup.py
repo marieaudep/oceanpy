@@ -12,4 +12,6 @@ setup(name = 'oceanpy',
       license = 'LICENSE.txt',
       description = 'Physical Oceanography for Python',
       long_description = open('README.md').read(),
+      install_requires = ['prettycpt'],
+      dependency_links = ['https://github.com/j08lue/prettycpt/tarball/master#egg=package-1.0']
       )
