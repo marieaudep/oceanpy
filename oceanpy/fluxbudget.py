@@ -7,25 +7,8 @@ _facj,_faci = (np.array([-1,1,0,0]),np.array([0,0,-1,1]))
 _faces_desc = ['bottom','top','left','right']
 
 
-def _faces_idx(idxj,idxi):
-    """Get indices for the faces"""
-    return (np.tile(idxj,(len(_facj),1)) + _facj[:,np.newaxis],
-            np.tile(idxi,(len(_faci),1)) + _faci[:,np.newaxis])
-
-
-def _pad_2d(a):
-    """Returns a copy of `a` with the outer values duplicated"""
-    if isinstance(a,np.ma.masked_array):
-        apad = np.ma.zeros(np.array(a.shape)+2,a.dtype)
-    else:
-        apad = np.zeros(np.array(a.shape)+2,a.dtype)
-    apad[1:-1,1:-1] = a
-    apad[1:-1,[0,-1]] = a[:,[-1,0]]
-    return apad
-
-
 def _outline_idx(mask):
-    """Find the grid cells in mask that form the outline of the masked area
+    """Find the grid cells in `mask` that form the outline of the masked area
     and return their indices
     """
     maskedj,maskedi = np.where(mask)
@@ -33,6 +16,12 @@ def _outline_idx(mask):
     maskpad = _pad_2d(mask)
     atborder = ~np.all(maskpad[maskedjf+1,maskedif+1],axis=0)
     return (maskedj[atborder],maskedi[atborder])
+
+
+def _faces_idx(idxj,idxi):
+    """Get indices for the faces of the given grid boxes"""
+    return (np.tile(idxj,(len(_facj),1)) + _facj[:,np.newaxis],
+            np.tile(idxi,(len(_faci),1)) + _faci[:,np.newaxis])
 
 
 def _find_open_faces(borderj,borderi,mask):
@@ -46,6 +35,18 @@ def _find_open_faces(borderj,borderi,mask):
     borderjf,borderif = _faces_idx(borderj,borderi)
     maskpad = _pad_2d(mask)
     return ~maskpad[borderjf+1,borderif+1]
+
+
+def _pad_2d(a):
+    """Returns a copy of `a` with the outer values duplicated"""
+    if isinstance(a,np.ma.masked_array):
+        apad = np.ma.zeros(np.array(a.shape)+2,a.dtype)
+    else:
+        apad = np.zeros(np.array(a.shape)+2,a.dtype)
+    apad[1:-1,1:-1] = a
+    apad[1:-1,[0,-1]] = a[:,[-1,0]]
+    return apad
+
 
 
 def _budget_2d_arakawa_b(borderj,borderi,faces,U,V,scalar):
@@ -163,7 +164,6 @@ def budget_over_region_2D(U,V,scalar,mask,grid='ArakawaB'):
         region over which to compute the budget (True marks boxes inside the region)
     grid : str, e.g. 'ArakawaA'
         type of grid
-    
     """
     if scalar is None:
         grid = 'single'
