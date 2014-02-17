@@ -98,8 +98,8 @@ def _budget_2d_arakawa_a(borderj,borderi,faces,U,V,scalar):
     # interpolate u,v to T grid INTERFACES (effectively an Arakawa C-grid)
     Uint = np.empty_like(U)
     Vint = np.empty_like(V)
-    Uint[:,:-1] = (U[:,1:]+U[:,:-1])/2.
-    Vint[:-1,:] = (V[1:,:]+V[:-1,:])/2.
+    Uint[:,:-1] = (U[:,1:]+U[:,:-1])/2. # interpolate U in x-direction
+    Vint[:-1,:] = (V[1:,:]+V[:-1,:])/2. # interpolate V in y-direction
     Uint[:,-1] = Uint[:,-2]
     Vint[-1,:] = Vint[-2,:]
 
