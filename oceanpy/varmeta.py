@@ -286,24 +286,6 @@ class VarMeta:
                     'clabfmt': '%1.0f',
                     'cmstr': 'Spectral_r'},
                 }},
-        'atlantic':{
-            'profile': {
-                'psi': {
-                    'long': 'stream function',
-                    'short': 'psi',
-                    'units': 'Sv',
-                    'levels': np.arange(-24,24,2),
-                    'cmstr': 'spectral'},
-                }},
-        'indo-pacific':{
-            'profile': {
-                'psi': {
-                    'long': 'stream function',
-                    'short': 'psi',
-                    'units': 'Sv',
-                    'levels': np.arange(-40,40+1,4),
-                    'cmstr': 'spectral'},
-                }},
         }
 
     varnsynonyms = {'salt' : 'sal'}
