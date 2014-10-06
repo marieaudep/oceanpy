@@ -19,7 +19,7 @@ def _outline_idx(mask):
 
 
 def _faces_idx(idxj,idxi):
-    """Get indices for the faces of the given grid boxes"""
+    """Get indices for the faces of the given grid boxes (indices)"""
     return (np.tile(idxj,(len(_facj),1)) + _facj[:,np.newaxis],
             np.tile(idxi,(len(_faci),1)) + _faci[:,np.newaxis])
 
@@ -46,7 +46,6 @@ def _pad_2d(a):
     apad[1:-1,1:-1] = a
     apad[1:-1,[0,-1]] = a[:,[-1,0]]
     return apad
-
 
 
 def _budget_2d_arakawa_b(borderj,borderi,faces,U,V,scalar):
