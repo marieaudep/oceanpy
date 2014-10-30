@@ -67,6 +67,36 @@ def num2fmtdict(nlst,mindecs=1):
         fmtdct[x] = fmtstr.format(x)
     return fmtdct
 
+def generate_cmap_norm(levels, cm, extend='neither'):
+    """Generate a color map and norm from levels and a colormap (name)
+    
+    Parameters
+    ----------
+    levels : iterable of levels
+        data levels
+    cm : cmap or name of registered cmap
+        color map
+    extend : str [ neither | both | min | max ]
+        which edge(s) of the color range to extend
+    """
+    if isinstance(cm, basestring):
+        cm = plt.get_cmap(cm)
+    nplus = [-1,0,0,1][['neither','min','max','both'].index(extend)]
+    N = len(levels) + nplus
+    colors = cm(np.linspace(0, 1, N))
+    cmap = mcolors.ListedColormap(colors)
+    if extend in ['min', 'both']:
+        cmap.set_under(colors[0])
+    else:
+        cmap.set_under('none')
+    if extend in ['max', 'both']:
+        cmap.set_over(colors[-1])
+    else:
+        cmap.set_over('none')
+    cmap.colorbar_extend = extend
+    norm = mcolors.BoundaryNorm(levels, N)
+    return cmap, norm
+
 
 
 class VarMeta:
@@ -367,39 +397,33 @@ class VarMeta:
                 pass
 
 
-    def update_cmap(self,levels=None,basecmap=None,cmstr=None,update_ticks=True):
+    def update_cmap(self, levels=None, cmap=None,
+            extend='neither',
+            update_ticks=True):
         """Generate cmap and norm
         
         Parameters
         ----------
         levels : array-like, optional
             updates self.levels before generation
-        basecmap : color map to sub-sample, optional
-            used instead of the color map defined in the vmdict
-        cmapstr : str, optional
-            color map name to retrieve using plt.cm.get_cmap()
+        cmap : optional
+            color map to retrieve using plt.cm.get_cmap()
+        extend : [neither, both, max, min]
+            where to extend cmap
         update_ticks : bool
             whether to update the ticks afterwards
         """
-        if basecmap is None:
-            if cmstr is not None:
-                basecmap = plt.cm.get_cmap(cmstr)
-                self.cmstr = cmstr
-            if hasattr(self,'cmap'):
-                basecmap = self.cmap
-            elif hasattr(self,'cmstr'):
-                basecmap = plt.cm.get_cmap(self.cmstr)
-            else:
-                raise ValueError('missing anything to be used as basecmap')
+        if cmap is not None:
+            self.cmap = plt.cm.get_cmap(cmap)
+            self.cmstr = cmap.name
+        else:
+            if not hasattr(self, cmap):
+                self.cmap = plt.cm.get_cmap(self.cmstr)
         if levels is not None:
             self.levels = levels
-        colors = basecmap(np.linspace(0, 1, len(self.levels)))
-        self.cmap = mcolors.ListedColormap(colors)
-        self.norm = mcolors.BoundaryNorm(self.levels,self.cmap.N)
-        # store vlim
+        self.cmap, self.norm = generate_cmap_norm(self.levels, self.cmap, extend=extend)
         self.vmin = np.min(self.levels)
         self.vmax = np.max(self.levels)
-        
         if update_ticks:
             self.update_ticks()
 
