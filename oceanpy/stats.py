@@ -1,6 +1,6 @@
 import numpy as np
 import copy
-from matplotlib import delaunay
+from matplotlib.tri import Triangulation
 
 
 def standardize(matrix,preserve_sign=False):
@@ -126,7 +126,7 @@ def zerocrossings(data,central=False):
 
 def griddata_nn_delaunay(x,y,z,xi,yi):
     """Like matplotlib.mlab.griddata() but strictly using delaunay"""
-    tri = delaunay.Triangulation(x,y)
+    tri = Triangulation(x,y)
     interp = tri.nn_interpolator(z)
     return np.ma.masked_invalid(interp(xi,yi)) 
 
